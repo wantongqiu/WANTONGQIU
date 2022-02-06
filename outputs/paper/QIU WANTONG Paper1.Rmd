@@ -1,0 +1,134 @@
+---
+title: "How homeless shelter systems affect people's lives and work"
+author: "QIU WANTONG"
+date: "02/07/2022"
+output: pdf_document
+abstract: "An eye on the data about the supply relationship between overnight service and daily shelter can reveal the development of a city or even a country. Because homeless people reflect the local economic development, the executive power of government management, the gap between the rich and poor, and a perfect and healthy shelter system is to reduce the numbers of homelessness, which plays a vital role in social development. Compared with the past, this report can see whether the homeless shelters are improved, and more intuitively see whether the social problems are attached importance by the government and the country."
+bibliography: ref_list.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tinytex)
+library(tidyverse)
+library(knitr)
+```
+
+# Introduction
+
+With the Omicron outbreak occurring from the second half of 2021 to February 2022, people's lives and work have been greatly affected. According to Open Data Toronto's Data Base on SMIS, occupancy of daily shelters is close to 100%, which means that the homeless shelter community is still very large. In this situation, the government is also very concerned about homelessness and the improvement of the shelter system, and the government also increases the budget on shelter systems and epidemic prevention.[@budget] Toronto is considering setting up more warming centers to protect homeless people from the pandemic.[@warming]
+
+Balancing the supply relationship of the daily shelter and data analysis of the overnight program are very important for the development and planning of the whole city. Because from the application demands of this homelessness, we can see whether the current social environment is a sustainable and healthy development. To put it simply, in this data from Open Data Toronto, we find that the occupancy rate of the daily shelter is so high that it is worth exploring some of the reasons and what impact it will have on society. Especially because of the outbreak of Omicron, we need to pay more attention to whether the supply of this homeless shelter is in place because without these data, it is difficult for relevant departments to help make protective measures of homelessness in each area according to corresponding data, rising numbers of the Omicron are also likely to be hard to control.
+
+In order to have an in-depth understanding of the data set about occupancy and capacity of daily shelter, overnight service. I will select some variables in the data set before starting the analysis. To state analyzes the purpose and importance of Overnight service, daily shelter occupancy, and capacity. I will focus on analyzing some variables that contribute a lot to data analysis and try to find the connection between variables. Therefore, I will use the proportion of room occupancy in the program area variable to distinguish room occupancy for overnight service or winter program or temporary response program, or COVID-19 program. After that, I try to choose to observe the different number of occupied rooms in each location city to reflect the regional development of each city. Subsequently, we can see that different groups of people have different demands for services, according to the different data in the variable of the sector and the number of overnight service users. Finally, I performed more calculations for data of different types of overnight services in the table, so as to provide more data types for analysis. I will analysis and process my data in R.[@R] At the beginning I install the tidyverse[@ti] package, dplyr[@dp] package and knitr[@k@n@i] package to be used in my following R markdown report. After that, I can make the table and figures by ggplot2[@gg]. And the data set which I analyze are from the Open Data Toronto[@open].After creating the table and figures, I will give my paper a general introduction to help my audience have a pre-understanding of my topic.And then I write a abstract for leading the audience to see what happens in this story, and I try to present.Of course I need to give a glowing and straightforward title for the paper. And reference is really important for the paper in this way to respect the works of others.  Finally, after I finishing writing the paper I need to install tinytex[@tex@tex2]to change my R markdown report to the form of PDF.
+
+
+```{r 1, include=FALSE}
+library(tidyverse)
+library(opendatatoronto)
+library(dplyr)
+
+# get package
+package <- show_package("21c83b32-d5a8-4106-a54f-010dbe49f6f2")
+package
+
+# get all resources for this package
+resources <- list_package_resources("21c83b32-d5a8-4106-a54f-010dbe49f6f2")
+
+# identify datastore resources; by default, Toronto Open Data sets datastore resource format to CSV for non-geospatial and GeoJSON for geospatial resources
+datastore_resources <- filter(resources, tolower(format) %in% c('csv', 'geojson'))
+
+# load the first datastore resource as a sample
+data <- filter(datastore_resources, row_number()==1) %>% get_resource()
+data
+```
+
+
+
+\newpage
+
+# Data
+
+# Data Source
+
+The data in the Open Data Toronto Portal is collected from the Shelter Support and Shelter Management Information System(SMIS) which analyzed the overnight service, demand, and supply of the daily shelter in Ontario in 2022. SMIS is a centralized information management system that provides information on shelter occupancy rates in Toronto. It can provide real-time data on occupancy rates.[@what]In this data, it includes information about the shelter's occupancy rate, the shelter's location in Toronto, and a detailed breakdown of the shelter's capacity, including the number of rooms, beds, and so on.
+
+# Methodology and Data Collection
+
+This data is collected from shelter's occupancy data collected by date record node. Once you've checked into Shelter, your check-in data will be collected at 4am the next day, meaning that all of that day's data will be counted for the next day. Due to the impact of COVID-19, overnight service is also affected, because the epidemic requires more physical distance between people, so the city is ready to add two emergency shelters to confirm the physical distance.[@emergency]
+
+On the other hand,This data set is relatively comprehensive in the classification of shelter occupancy rate, including more detailed classifications related to the capacity of actual rooms and the capacity of funding rooms. In this way, analysts can accurately understand the supply relationship of these shelters and overnight services when they receive the data so that they can make some realistic plans for the future. In addition, the data set also provides the corresponding ID numbers of program, shelter, and organization, so that all data can be made more concise during data analysis, and no matter what changes are made to these names, the ID numbers will not be changed. In this way, the corresponding data will not be found due to different names in data analysis. However, although we have detailed information about overnight service and shelter occupancy in this data set, there are a lot of missing values in these useful occupancy observations. This missing information will lead to deviations in data statistics, leading to unreliable data.
+
+# Data Characteristics
+
+There are 5007 observations of 32 variables in this data set, including occupied date, the number or percentage of beds and rooms of occupancy. Type of Capacity, number of actual and funding beds and rooms, organizations providing services, locations information, types of Overnight service, etc.This data is classified in detail. All the data related to occupancy and capacity of overnight service and daily shelter that can be analyzed are collected in this data set. 
+
+Some of the variables contribute significantly to the analysis of the whole data set, for example, counting the overnight service types and users, which indicates that people make different choices for different overnight services. Then the occupancy of the room, this variable can let us see the data response of shelter's occupancy in different aspects. The program area indicates whether the program is more about the base shelter and overnight services system, or is about a temporary response program. Sector refers to the data classified by gender, age, and household size for those who need shelter. Next, I will describe the relationship between these variables in charts and explain them.
+
+
+# Program area and the percentage of the occupied room 
+
+According to the information provided by the SMIS in open data Toronto, in the first figure, I analyzed the relationship between the program area variable and the percentage of the occupied room variable. In the program area variable of data set, we can see that it is divided into three areas: Base Shelter and Overnight Services System, COVID-19, and Temporary Refugee. We can see the occupancy ratio of rooms in these three sections in this bar chart . 
+
+
+
+```{r 2, fig.width=8, fig.height=4, warning=FALSE, message=FALSE, echo = FALSE}
+data %>% filter(!is.na(OCCUPANCY_RATE_ROOMS)) %>% 
+  ggplot(aes(x= PROGRAM_AREA, fill = OCCUPANCY_RATE_ROOMS)) + geom_bar(aes(y = (..count..)/sum(..count..)))+ theme_classic()+
+  labs(x = "The category of program area", y = "The proportion of actual room capacity that is occupied for the reporting date", title = "Figure 1:Number of service users in program area ")
+```
+
+
+In this bar chart, we can see that the response of COVID-19 accounts for the largest proportion, which is over 60%, while temporary refugee accounts for the least proportion, which is less than 20%. Then, base shelter and overnight service systems accounted for more than 20%. As we can see from this ratio, the shelter's occupancy rate was greatly affected by Omicron's explosion.
+
+# Location city and occupied rooms
+
+For the second figure, I use a geometric point plot to show the relationship between location city and rooms occupancy variables. Location city contains 5 regions and data of missing value. In order to ensure data integrity, I did not filter out the missing value here. The occupied rooms variable is about the number of occupied rooms by the SMIS database in open data Toronto on a specific date and time. Here, we can observe the distribution relationship between these two variables through the plot.
+
+
+```{r 3, warning=FALSE, message=FALSE, echo = FALSE}
+data %>% ggplot(aes(x = LOCATION_CITY, y = OCCUPIED_ROOMS, color = LOCATION_CITY)) + geom_point() + theme_classic()+
+  labs(x = "Location city", y = "Number of rooms showing as occupied by a shelter user in SMIS", title = "Figure 2: Rooms occupancy & Locaiton city in SMIS")
+
+```
+
+In this point plot, if the missing value is ignored, Scarborough district occupies the largest number of rooms for daily shelter, and Vaughan district occupies the least. At the same time, shelters in North York and Toronto each occupied more than 200 rooms. From this figure, we can see that the three areas with relatively dense population distribution occupy more rooms. Meanwhile, due to some missing values, the accuracy of data analysis needs to be improved.
+
+\newpage
+
+# Sector and Service user count
+
+Based on the data from open Data Toronto, We can make a geometric point plot to observe the relationship between sector variable and service user count variable. The Sector variable was divided into 5 categories, namely families, men, mixed adults, women, and youth. According to this plot, we can see the number of people selected overnight service in  5 different homeless shelters, respectively.
+
+
+```{r 4, warning=FALSE, message=FALSE, echo = FALSE}
+data %>% ggplot(aes(x = SECTOR, y = SERVICE_USER_COUNT, color = SECTOR)) + geom_point() + theme_classic()+
+  labs(x = "The module of homeless shleters", y = "Number of overnight service users in the occupancy time & date", title = "Figure 3: Number of overnight service users about different sector")
+```
+
+In this point plot, we can see that the number of families with the highest demand for overnight service exceeds 400users. Then the group with the least demand is the youth group, with less than 100 users. Mixed adult has the second-largest demand, with more than 200 users. Men have overnight services users of over 200, and women have over 100 fewer users than men. From this figure, we can intuitively see that families need to receive high attention from government departments, and it is also worth thinking about how to help them.
+
+
+# Data about overnight service types
+
+```{r abcd,warning=FALSE,message=FALSE,echo = FALSE}
+summary_table <- data %>% filter(!is.na(SERVICE_USER_COUNT)) %>% 
+  group_by(OVERNIGHT_SERVICE_TYPE) %>% summarise(min = min(SERVICE_USER_COUNT),
+                                  Q1 = quantile(SERVICE_USER_COUNT,0.25),
+                                  median = median(SERVICE_USER_COUNT),
+                                  Q3 = quantile(SERVICE_USER_COUNT,0.75),
+                                  max = max(SERVICE_USER_COUNT),
+                                  IQR = Q3 - Q1,
+                                  mean = mean(SERVICE_USER_COUNT), 
+                                  sd = sd(SERVICE_USER_COUNT)) 
+# change their orders, add or remove some of them
+knitr::kable(summary_table, caption = "More Data about Overnight Service Type ")
+```
+
+According to the database from SMIS, this table is intended to provide more data about overnight Service type. It includes minimum and maximum values, the values of the median, first and third quantile, Inter Quartile Range, and Standard Deviation.
+The mean and median of overnight service types are similar at `r round(summary_table$mean)`, which supports that the distribution of the number of overnight service types is not symmetric. The sample standard deviation (`r summary_table$sd`)  is relatively big, meaning the uncertainty of the data is relatively high. 
+
+
+\newpage
+
+# Reference
